@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>숫자 맞추기 게임</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>숫자 맞추기 게임</h1>
+    <p>1부터 100까지의 숫자를 맞춰보세요:</p>
+    <p>(범위: 1에서 100까지)</p>
+    <input type="text" id="guessField">
+    <input type="submit" value="제출" id="guessSubmit">
+    <p class="message"></p>
+    
+    <h2>이전 추측</h2>
+    <ul id="guessList"></ul>
+
+    <script>
+        // 1부터 100까지의 임의의 숫자 생성
+        const randomNumber = Math.floor(Math.random() * 100) + 1;
+        
+        const guessSubmit = document.getElementById('guessSubmit');
+        const guessField = document.getElementById('guessField');
+        const message = document.querySelector('.message');
+        const guessList = document.getElementById('guessList');
+
+        let guesses = 0;
+        let prevGuesses = [];
+
+        guessSubmit.addEventListener('click', checkGuess);
+
+        function checkGuess() {
+            const userGuess = parseInt(guessField.value);
+            prevGuesses.push(userGuess);
+            guesses++;
+
+            if (userGuess === randomNumber) {
+                message.textContent = `축하합니다! ${guesses}번만에 숫자를 맞췄습니다!`;
+                message.style.color = 'green';
+                setGameOver();
+            } else if (guesses === 10) {
+                message.textContent = `게임 오버! 숫자는 ${randomNumber}였습니다.`;
+                message.style.color = 'red';
+                setGameOver();
+            } else {
+                const lowOrHigh = userGuess < randomNumber ? '너무 낮아요!' : '너무 높아요!';
+                message.textContent = `${lowOrHigh} ${10 - guesses}번의 기회가 남았습니다.`;
+                message.style.color = 'blue';
+            }
+
+            // Display the user's previous guesses
+            const guessListItem = document.createElement('li');
+            guessListItem.textContent = `추측 #${guesses}: ${userGuess}`;
+            guessList.appendChild(guessListItem);
+
+            guessField.value = '';
+            guessField.focus();
+        }
+
+        function setGameOver() {
+            guessField.disabled = true;
+            guessSubmit.disabled = true;
+            guessField.style.borderColor = 'gray';
+
+            const resetButton = document.createElement('button');
+            resetButton.textContent = '새 게임 시작';
+            document.body.appendChild(resetButton);
+            resetButton.addEventListener('click', resetGame);
+        }
+
+        function resetGame() {
+            guesses = 0;
+            prevGuesses = [];
+            guessList.innerHTML = '';
+
+            const resetButton = document.querySelector('button');
+            resetButton.parentNode.removeChild(resetButton);
+
+            guessField.disabled = false;
+            guessSubmit.disabled = false;
+            guessField.value = '';
+            guessField.style.borderColor = 'black';
+
+            message.textContent = '';
+            message.style.color = 'black';
+
+            randomNumber = Math.floor(Math.random() * 100) + 1;
+        }
+    </script>
+</body>
+</html>
